@@ -10,5 +10,17 @@
             "name": "Firose Hussain",
             "email": "github@firumon.com"
         }
-    ]
+    ],
+    "autoload": {
+        "psr-4": {
+            "Milestone\\Interact\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Milestone\\Interact\\InteractServiceProvider"
+            ]
+        }
+    }
 }
