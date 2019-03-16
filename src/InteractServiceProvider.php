@@ -24,6 +24,5 @@ class InteractServiceProvider extends ServiceProvider
     public function boot()
     {
         //
-        //
     }
 }
