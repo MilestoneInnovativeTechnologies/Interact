@@ -1,0 +1,14 @@
+{
+    "name": "milestone/interact",
+    "description": "Direct database interaction of project",
+    "type": "laravel-package",
+    "require": {
+        "milestone/appframe": "^0.9.7"
+    },
+    "authors": [
+        {
+            "name": "Firose Hussain",
+            "email": "github@firumon.com"
+        }
+    ]
+}
