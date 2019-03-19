@@ -118,7 +118,7 @@ class Controller
         $fillable = [];
         foreach ($this->attributes as $fill){
             if(array_key_exists($fill,$columnMapArray)) $fillable[$fill] = $record[$columnMapArray[$fill]];
-            elseif(array_key_exists($fill,$methods)) $fillable[$fill] = call_user_func([$this->table,$methods[$fill]],$record);
+            elseif(is_array($methods) && array_key_exists($fill,$methods)) $fillable[$fill] = call_user_func([$this->table,$methods[$fill]],$record);
             elseif(array_key_exists($fill,$record)) $fillable[$fill] = $record[$fill];
         }
         return $fillable;
