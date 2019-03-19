@@ -28,24 +28,6 @@ interface Table
     public function getFillAttributes();
 
     /**
-     * If the incoming data row have the key which is using same as the primary key of the current interaction
-     * table, then return that otherwise null.
-     * If null, then there should be a method name which returns the primary value from data row
-     *
-     * @return string | null
-     */
-    public function getColumnForPrimaryKey();
-
-    /**
-     * The method name, which is used to get primary value from data row.
-     * If any incoming data key is using as primary value, then define that in getColumnForPrimaryKey.
-     * The method will be called with data row as array as the only parameter
-     *
-     * @return string | null
-     */
-    public function methodNameToGetPrimaryValue();
-
-    /**
      * If the incoming data can be mapped directly to the any attribute in fill attributes
      * then that attributes are passed as the key with corresponding column as values.
      * If any modification required in between mapping, then the method name, which performs

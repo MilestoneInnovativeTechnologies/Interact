@@ -10,8 +10,6 @@ class Controller
     protected $table;
     protected $tableModel;
     protected $attributes;
-    protected $columnForPrimaryKey;
-    protected $methodNameToGetPrimaryValue;
     protected $columnMapArray;
     protected $columnMethodMapArray;
     protected $primary_key;
@@ -40,8 +38,6 @@ class Controller
         $class = $this->getControllerClass($table); $table = $this->table = new $class;
         $tableModel = $table->getModel(); $this->tableModel = new $tableModel;
         $this->attributes = $table->getFillAttributes();
-        $this->columnForPrimaryKey = $table->getColumnForPrimaryKey();
-        $this->methodNameToGetPrimaryValue = $table->methodNameToGetPrimaryValue();
         $this->columnMapArray = $table->attributeToColumnMapArray();
         $this->columnMethodMapArray = $table->attributeToColumnMethodMapArray();
     }
@@ -70,7 +66,7 @@ class Controller
     private function do_read($data){
         if(!$data || empty($data)) return $this->getAllData();
         $result = [];
-        foreach ($data as $record) $result[call_user_func_array([$this->table,$this->methodNameToGetPrimaryValue],[$record])] = $this->getData($record);
+        foreach ($data as $record) $result[$this->table->getPrimaryValueFromRowData($record)] = $this->getData($record);
         return $result;
     }
     private function do_get($data){ return $this->do_read($data); }
@@ -95,7 +91,7 @@ class Controller
     }
 
     private function updateData($record){
-        $id = call_user_func_array([$this->table,$this->methodNameToGetPrimaryValue],[$record]);
+        $id = $this->table->getPrimaryValueFromRowData($record);
         if(!$id) return null;
         $this->tableModel->find($id)->forceFill($this->getFillable($record))->save();
         return $id;
@@ -106,13 +102,13 @@ class Controller
     }
 
     private function getData($record){
-        $id = call_user_func_array([$this->table,$this->methodNameToGetPrimaryValue],[$record]);
+        $id = $this->table->getPrimaryValueFromRowData($record);
         if(!$id) return null;
         return $this->tableModel->find($id);
     }
 
     private function deleteRecord($record){
-        $id = call_user_func_array([$this->table,$this->methodNameToGetPrimaryValue],[$record]);
+        $id = $this->table->getPrimaryValueFromRowData($record);
         if(!$id) return null;
         return $this->tableModel->destroy($id) ? $id : null;
     }
