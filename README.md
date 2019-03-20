@@ -13,8 +13,13 @@ If a method named, **isRecordValid**, is available, then this method will be cal
 That particular record will be the only argument supplied to this method.<br>
 This method should return boolean _true_, _false_ or _string_ mentioning the reason for invalid.
 
+If a method named, **isDone** exists, then this method will be called after executing each record.<br>
+This method received that particular record and id of execution.<br>
+Return value is ignored.
+
 If a method named, **preActions**, is exists, then it will be called before starting the whole action.
-It will be supplied with the argument, the total Content
+It will be supplied with the argument, the total Content.
+Return value is ignored.
 
 If a method named, **postActions**, is exists, then it will be called after executing the whole action.
 It will be supplied with the argument, the total Content and Result object.

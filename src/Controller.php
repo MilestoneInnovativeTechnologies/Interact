@@ -150,6 +150,12 @@ class Controller
         } return false;
     }
 
+    private function do_done($record,$id){
+        if(method_exists($this->table,'isDone'))
+            $this->table->isDone($record,$id);
+        return $id;
+    }
+
     private function callPostActions($Content,$Result){
         $post_action = null;
         if(method_exists($this->table,'postActions'))
