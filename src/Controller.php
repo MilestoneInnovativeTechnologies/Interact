@@ -95,12 +95,13 @@ class Controller
     }
 
     private function insertData($record){
-        return $this->tableModel->create($this->getFillable($record))->getKey();
+        return $this->do_skip($record) ?: $this->tableModel->create($this->getFillable($record))->getKey();
     }
 
     private function updateData($record){
         $id = $this->table->getPrimaryValueFromRowData($record);
         if(!$id) return null;
+        $skip = $this->do_skip($record); if($skip !== false) return $skip;
         $this->tableModel->find($id)->forceFill($this->getFillable($record))->save();
         return $id;
     }
@@ -112,12 +113,14 @@ class Controller
     private function getData($record){
         $id = $this->table->getPrimaryValueFromRowData($record);
         if(!$id) return null;
+        $skip = $this->do_skip($record); if($skip !== false) return $skip;
         return $this->tableModel->find($id);
     }
 
     private function deleteRecord($record){
         $id = $this->table->getPrimaryValueFromRowData($record);
         if(!$id) return null;
+        $skip = $this->do_skip($record); if($skip !== false) return $skip;
         return $this->tableModel->destroy($id) ? $id : null;
     }
 
@@ -130,5 +133,14 @@ class Controller
             elseif(is_array($record) && array_key_exists($fill,$record)) $fillable[$fill] = $record[$fill];
         }
         return $fillable;
+    }
+
+    private function do_skip($record){
+        if(method_exists($this->table,'isRecordValid')){
+            $valid = $this->table->isRecordValid($record);
+            if($valid === true) return false;
+            elseif ($valid === false) return 'Record Skipped';
+            else return $valid;
+        } return false;
     }
 }
