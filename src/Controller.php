@@ -95,7 +95,7 @@ class Controller
     }
 
     private function insertData($record){
-        return $this->tableModel->create($this->getFillable($record))->id;
+        return $this->tableModel->create($this->getFillable($record))->getKey();
     }
 
     private function updateData($record){
