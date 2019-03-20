@@ -22,7 +22,8 @@ class Controller
             $this->setProperties($Content['table']);
             $this->setSource($Content);
             $this->primary_key = $Content['primary_key'];
-            $Return[] = $this->run($Content['mode'],$Content['data']);
+            $this->callPreActions($Content);
+            $Return[] = $this->callPostActions($Content,$this->run($Content['mode'],$Content['data']));
         }
         return $Return;
     }
@@ -135,6 +136,11 @@ class Controller
         return $fillable;
     }
 
+    private function callPreActions($Content){
+        if(method_exists($this->table,'preActions'))
+            call_user_func_array([$this->table,'preActions'],[$Content]);
+    }
+
     private function do_skip($record){
         if(method_exists($this->table,'isRecordValid')){
             $valid = $this->table->isRecordValid($record);
@@ -143,4 +149,12 @@ class Controller
             else return $valid;
         } return false;
     }
+
+    private function callPostActions($Content,$Result){
+        $post_action = null;
+        if(method_exists($this->table,'postActions'))
+            $post_action = call_user_func_array([$this->table,'postActions'],[$Content,$Result]);
+        return $post_action ?: $Result;
+    }
+
 }

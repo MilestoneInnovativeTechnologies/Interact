@@ -12,3 +12,10 @@ If any data from incoming interact file required, the define public properties i
 If a method named, **isRecordValid**, is available, then this method will be called before executing each record.<br>
 That particular record will be the only argument supplied to this method.<br>
 This method should return boolean _true_, _false_ or _string_ mentioning the reason for invalid.
+
+If a method named, **preActions**, is exists, then it will be called before starting the whole action.
+It will be supplied with the argument, the total Content
+
+If a method named, **postActions**, is exists, then it will be called after executing the whole action.
+It will be supplied with the argument, the total Content and Result object.
+This should respond with modified result which will be outputted or else with null to output default Result object
