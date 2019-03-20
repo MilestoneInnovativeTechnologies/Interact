@@ -96,7 +96,8 @@ class Controller
     }
 
     private function insertData($record){
-        return $this->do_skip($record) ?: $this->tableModel->create($this->getFillable($record))->getKey();
+        return $this->do_skip($record) ?:
+            $this->do_done($record,$this->tableModel->create($this->getFillable($record))->getKey());
     }
 
     private function updateData($record){
@@ -104,7 +105,7 @@ class Controller
         if(!$id) return null;
         $skip = $this->do_skip($record); if($skip !== false) return $skip;
         $this->tableModel->find($id)->forceFill($this->getFillable($record))->save();
-        return $id;
+        return $this->do_done($record,$id);
     }
 
     private function getAllData(){
@@ -122,7 +123,7 @@ class Controller
         $id = $this->table->getPrimaryValueFromRowData($record);
         if(!$id) return null;
         $skip = $this->do_skip($record); if($skip !== false) return $skip;
-        return $this->tableModel->destroy($id) ? $id : null;
+        return $this->tableModel->destroy($id) ? $this->do_done($record,$id) : null;
     }
 
     private function getFillable($record){
