@@ -20,6 +20,7 @@ class Controller
         $Contents = $this->getContent(file_get_contents($request->file('file')));
         foreach((array) $Contents as $Content){
             $this->setProperties($Content['table']);
+            $this->setSource($Content);
             $this->primary_key = $Content['primary_key'];
             $Return[] = $this->run($Content['mode'],$Content['data']);
         }
@@ -40,6 +41,13 @@ class Controller
         $this->attributes = $table->getFillAttributes();
         $this->columnMapArray = $table->attributeToColumnMapArray();
         $this->columnMethodMapArray = $table->attributeToColumnMethodMapArray();
+    }
+
+    private function setSource($Content){
+        foreach($Content as $Key => $Value){
+            if(property_exists($this->table,$Key))
+                $this->table->$Key = $Value;
+        }
     }
 
     private function run($mode,$data){
@@ -117,9 +125,9 @@ class Controller
         $columnMapArray = $this->columnMapArray; $methods = $this->columnMethodMapArray;
         $fillable = [];
         foreach ($this->attributes as $fill){
-            if(array_key_exists($fill,$columnMapArray)) $fillable[$fill] = $record[$columnMapArray[$fill]];
+            if(is_array($columnMapArray) && array_key_exists($fill,$columnMapArray)) $fillable[$fill] = $record[$columnMapArray[$fill]];
             elseif(is_array($methods) && array_key_exists($fill,$methods)) $fillable[$fill] = call_user_func([$this->table,$methods[$fill]],$record);
-            elseif(array_key_exists($fill,$record)) $fillable[$fill] = $record[$fill];
+            elseif(is_array($record) && array_key_exists($fill,$record)) $fillable[$fill] = $record[$fill];
         }
         return $fillable;
     }
