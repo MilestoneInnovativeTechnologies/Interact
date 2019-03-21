@@ -14,18 +14,13 @@ interface Table
     public function getPrimaryValueFromRowData($data);
 
     /**
-     * Complete class name of the model to which this table to interact
-     *
-     * @return string
-     */
-    public function getModel();
-
-    /**
-     * Array with all the attributes to be filled in this interaction
+     * The method which modifies the incoming data row for filling a attribute,
+     * then return 2-dimensional array with such attributes as keys and corresponding method names as values
+     * The method will be called with data row as array as the only parameter
      *
      * @return array
      */
-    public function getFillAttributes();
+    public function attributeToColumnMethodMapArray();
 
     /**
      * If the incoming data can be mapped directly to the any attribute in fill attributes
@@ -38,12 +33,16 @@ interface Table
     public function attributeToColumnMapArray();
 
     /**
-     * The method which modifies the incoming data row for filling a attribute,
-     * then return 2-dimensional array with such attributes as keys and corresponding method names as values
-     * The method will be called with data row as array as the only parameter
+     * Array with all the attributes to be filled in this interaction
      *
      * @return array
      */
-    public function attributeToColumnMethodMapArray();
+    public function getFillAttributes();
 
+    /**
+     * Complete class name of the model to which this table to interact
+     *
+     * @return string
+     */
+    public function getModel();
 }
