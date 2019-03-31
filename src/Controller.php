@@ -130,8 +130,8 @@ class Controller
         $columnMapArray = $this->columnMapArray; $methods = $this->columnMethodMapArray;
         $fillable = [];
         foreach ($this->attributes as $fill){
-            if(is_array($columnMapArray) && array_key_exists($fill,$columnMapArray)) $fillable[$fill] = $record[$columnMapArray[$fill]];
-            elseif(is_array($methods) && array_key_exists($fill,$methods)) $fillable[$fill] = call_user_func([$this->table,$methods[$fill]],$record);
+            if(is_array($methods) && !empty($methods) && array_key_exists($fill,$methods)) $fillable[$fill] = call_user_func([$this->table,$methods[$fill]],$record);
+            elseif(is_array($columnMapArray) && !empty($columnMapArray) && array_key_exists($fill,$columnMapArray)) $fillable[$fill] = $record[$columnMapArray[$fill]];
             elseif(is_array($record) && array_key_exists($fill,$record)) $fillable[$fill] = $record[$fill];
         }
         return $fillable;
