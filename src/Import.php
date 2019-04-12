@@ -92,6 +92,11 @@ class Import extends Controller
     private function do_destroy($data){ return $this->do_delete($data); }
     private function do_remove($data){ return $this->do_delete($data); }
 
+    private function do_update_or_create($data){
+        $id = $this->getPrimaryId($data);
+        return $id ? $this->do_update($data) : $this->do_create($data);
+    }
+
     private function getPrimaryKeyCode($data){
         if(!$this->primary_key || empty($this->primary_key)) return microtime(true)*1000000000;
         return is_array($this->primary_key) ? implode(config('interact.delimiter'),Arr::only($data,$this->primary_key)) : Arr::get($data,$this->primary_key);
