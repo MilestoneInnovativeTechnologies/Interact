@@ -5,6 +5,7 @@
         'namespace' => 'Milestone\\Interact',
         'prefix' => $prefix,
     ],function(){
+        Route::get('{table_name}','Export@index');
         Route::get('/',function(){ return '<form method="post" enctype="multipart/form-data"><input type="file" name="file"><input type="submit"></form>'; });
         Route::post('/','Import@index');
     });
