@@ -53,3 +53,5 @@ url: /interact
 
 For exporting from web, request to url in the format
 /interact/{tablename}?created_at=datetime&updated_at=datetime&format=xml&type=file
+
+The root parameter interact can be changed to desired one in config
