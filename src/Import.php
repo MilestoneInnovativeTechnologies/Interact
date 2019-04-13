@@ -13,6 +13,9 @@ class Import extends Controller
     public $method_get_is_valid = 'isValidImportRecord';
     public $method_imported = 'recordImported';
 
+    private $pre_import = 'preImport';
+    private $post_import = 'postImport';
+
     protected $attributes, $mappings;
     protected $primary_key;
 
@@ -46,11 +49,11 @@ class Import extends Controller
     }
 
     private function callPreImport($Content){
-        return $this->getCallMethod($this->object,'preImport',[$Content]);
+        return $this->getCallMethod($this->object,$this->pre_import,[$Content]);
     }
 
     private function callPostImport($Content,$Result){
-        return $this->getCallMethod($this->object,'postImport',[$Content,$Result]) ?: $Result;
+        return $this->getCallMethod($this->object,$this->post_import,[$Content,$Result]) ?: $Result;
     }
 
     private function run($mode,$data){
