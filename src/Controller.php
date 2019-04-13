@@ -2,6 +2,8 @@
 
 namespace Milestone\Interact;
 
+use Carbon\Carbon;
+
 class Controller
 {
     public $upload_file_name = 'file';
@@ -10,6 +12,10 @@ class Controller
     public $method_get_primary_id = 'getPrimaryIdFromImportRecord';
 
     public $object, $model;
+
+    private $cache_store = 'interact';
+    public $model_updated,$last_checked;
+    private $max_same_request = 10;
 
     public function getUploadedFileContent(){
         $file = request()->file($this->upload_file_name);
@@ -21,6 +27,13 @@ class Controller
         $table = $content['table'];
         $this->object = $Object = $this->getTableObject($table);
         $this->model = $Model = $this->getModel($Object);
+    }
+
+    public function initExport($table){
+        $this->object = $Object = $this->getTableObject($table);
+        $model_class = $this->getCallMethod($Object,$this->method_get_model);
+        $status = $this->setTimings($model_class);
+        $this->model = $status ? $this->getModel($Object) : null;
     }
 
     public function getTableObject($table){
@@ -72,6 +85,26 @@ class Controller
         if(method_exists($this->object,$map)) return call_user_func_array([$this->object,$map],[$record]);
         if(array_key_exists($map,$record)) return $record[$map];
         return null;
+    }
+
+    private function setTimings($model_class){
+        $checked = $model_class . '_checked'; $check_count = '_count';
+        $this->model_updated = cache()->store($this->cache_store)->rememberForever($model_class,function(){ return Carbon::create(1900); });
+        $this->last_checked = cache()->store($this->cache_store)
+            ->rememberForEver($checked,function()use($check_count){
+                cache()->store($this->cache_store)->put($check_count,0);
+                return Carbon::create(1900);
+            });
+        $count = cache()->store($this->cache_store)->increment($check_count);
+        return $this->last_checked->lessThanOrEqualTo($this->model_updated) || $count > $this->max_same_request;
+    }
+
+    public function updateTimings($table){
+        $this->object = $Object = $this->getTableObject($table);
+        $model_class = $this->getCallMethod($Object,$this->method_get_model);
+        $checked = $model_class . '_checked'; $check_count = '_count';
+        cache()->store($this->cache_store)->put($checked,now());
+        cache()->store($this->cache_store)->put($check_count,0);
     }
 
 }
