@@ -36,5 +36,20 @@ return [
     |
     */
 
-    'delimiter' => '/'
+    'delimiter' => '/',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Maximum same request to be ignored
+    |--------------------------------------------------------------------------
+    |
+    | The maximum number of requests to be ignored if the same request comes
+    | If requesting data for a particular data with specified time, if same
+    | is requesting over and over, then this number is used to ignore further
+    | same requests. If 0, no requests will be ignored and on each request
+    | DB Check will done.
+    |
+    */
+
+    'max_same_request' => 0
 ];
