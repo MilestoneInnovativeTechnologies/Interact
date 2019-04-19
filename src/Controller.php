@@ -15,7 +15,12 @@ class Controller
 
     private $cache_store = 'interact';
     public $model_updated,$last_checked;
-    private $max_same_request = 10;
+    private $max_same_request = 0;
+
+    public function __construct()
+    {
+        $this->max_same_request = config('interact.max_same_request');
+    }
 
     public function getUploadedFileContent(){
         $file = request()->file($this->upload_file_name);
@@ -32,7 +37,7 @@ class Controller
     public function initExport($table){
         $this->object = $Object = $this->getTableObject($table);
         $model_class = $this->getCallMethod($Object,$this->method_get_model);
-        $status = $this->setTimings($model_class);
+        $this->setTimings($model_class); $status = $this->incrementAndGetPingStatus($model_class);
         $this->model = $status ? $this->getModel($Object) : null;
     }
 
@@ -84,11 +89,12 @@ class Controller
     private function getFillValue($map,$record){
         if(method_exists($this->object,$map)) return call_user_func_array([$this->object,$map],[$record]);
         if(array_key_exists($map,$record)) return $record[$map];
+        if(is_callable([$this->object,$map])) return call_user_func_array([$this->object,$map],[$record]);
         return null;
     }
 
     private function setTimings($model_class){
-        $checked = $model_class . '_checked'; $check_count = '_count';
+        $checked = $model_class . '_checked'; $check_count = $model_class . '_count';
         $this->model_updated = cache()->store($this->cache_store)->rememberForever($model_class,function(){ return Carbon::create(1900); });
         $this->last_checked = cache()->store($this->cache_store)
             ->rememberForEver($checked,function()use($check_count){
@@ -99,10 +105,16 @@ class Controller
         return $this->last_checked->lessThanOrEqualTo($this->model_updated) || $count > $this->max_same_request;
     }
 
+    private function incrementAndGetPingStatus($model_class){
+        $check_count = $model_class . '_count';
+        $count = cache()->store($this->cache_store)->increment($check_count);
+        return $this->last_checked->lessThanOrEqualTo($this->model_updated) || $count > $this->max_same_request || $count === 0;
+    }
+
     public function updateTimings($table){
         $this->object = $Object = $this->getTableObject($table);
         $model_class = $this->getCallMethod($Object,$this->method_get_model);
-        $checked = $model_class . '_checked'; $check_count = '_count';
+        $checked = $model_class . '_checked'; $check_count = $model_class . '_count';
         cache()->store($this->cache_store)->put($checked,now());
         cache()->store($this->cache_store)->put($check_count,0);
     }
