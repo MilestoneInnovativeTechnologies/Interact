@@ -69,7 +69,7 @@ class Controller
     }
 
     public function getFilledAttributes($attributes,$mappings,$record){
-        if(!is_array($attributes) || empty($attributes) || !$record || empty($record)) return [];
+        $attributes = (array) $attributes; if(!$record || empty($record)) return [];
         $mappings = $this->getCorrectedMappings($mappings);
         $data = array_fill_keys($attributes,null);
         foreach ($data as $key => &$value){
