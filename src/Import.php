@@ -96,8 +96,13 @@ class Import extends Controller
     private function do_remove($data){ return $this->do_delete($data); }
 
     private function do_update_or_create($data){
-        $id = $this->getPrimaryId($data);
-        return $id ? $this->do_update($data) : $this->do_create($data);
+        $result = [];
+        foreach ($data as $record){
+            $id = $this->getPrimaryId($record);
+            $method = ($id) ? 'do_update' : 'do_create';
+            $result = array_merge($result,call_user_func([$this,$method],[$record]));
+        }
+        return $result;
     }
 
     private function getPrimaryKeyCode($data){
