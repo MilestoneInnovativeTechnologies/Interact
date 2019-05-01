@@ -79,7 +79,7 @@ class Export extends Controller
         $this->query_update = $this->model->query()
             ->where(function($Q) use($create,$update){
                 $Q->where('updated_at','>',$update)
-                    ->where('created_at','<',$create);
+                    ->where('created_at','<=',$create);
                 ;
             })
             ->orderBy('created_at','asc')
