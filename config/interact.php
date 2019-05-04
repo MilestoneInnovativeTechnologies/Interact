@@ -51,5 +51,38 @@ return [
     |
     */
 
-    'max_same_request' => 0
+    'max_same_request' => 0,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cache Store
+    |--------------------------------------------------------------------------
+    |
+    | Define cache store for storing table update timing
+    |
+    */
+
+    'cache_stores' => [
+        'interact' => [
+            'driver' => 'file',
+            'path' => storage_path('framework/cache/interact'),
+        ]
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Storage disk
+    |--------------------------------------------------------------------------
+    |
+    | Defines a storage disk where interact stores all details regarding
+    | synchronization
+    |
+    */
+
+    'filesystems_disks' => [
+        'interact' => [
+            'driver' => 'local',
+            'root' => storage_path('app/interact'),
+        ]
+    ]
 ];
