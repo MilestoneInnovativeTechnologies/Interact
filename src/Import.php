@@ -40,21 +40,10 @@ class Import extends Controller
                 $this->object->$Key = $Value;
     }
 
-    private function getAttributes($object){
-        return $this->getCallMethod($object,$this->method_get_attributes);
-    }
-
-    private function getMappings($object){
-        return $this->getCallMethod($object,$this->method_get_mappings);
-    }
-
-    private function callPreImport($Content){
-        return $this->getCallMethod($this->object,$this->pre_import,[$Content]);
-    }
-
-    private function callPostImport($Content,$Result){
-        return $this->getCallMethod($this->object,$this->post_import,[$Content,$Result]) ?: $Result;
-    }
+    private function getAttributes($object){ return $this->getCallMethod($object,$this->method_get_attributes); }
+    private function getMappings($object){ return $this->getCallMethod($object,$this->method_get_mappings); }
+    private function callPreImport($Content){ return $this->getCallMethod($this->object,$this->pre_import,[$Content]); }
+    private function callPostImport($Content,$Result){ return $this->getCallMethod($this->object,$this->post_import,[$Content,$Result]) ?: $Result; }
 
     private function run($mode,$data){
         if(!$this->attributes || empty($this->attributes)) return 'Fill attributes fields are empty!';
