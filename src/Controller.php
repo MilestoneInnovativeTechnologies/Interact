@@ -2,9 +2,11 @@
 
 namespace Milestone\Interact;
 
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller as BaseController;
 use Carbon\Carbon;
 
-class Controller
+class Controller extends BaseController
 {
     public $upload_file_name = 'file';
 
@@ -20,6 +22,7 @@ class Controller
     public function __construct()
     {
         $this->max_same_request = config('interact.max_same_request');
+        $this->cache_store = array_keys(config('interact.cache_stores'))[0];
     }
 
     public function getUploadedFileContent(){
@@ -41,31 +44,16 @@ class Controller
         $this->model = $status ? $this->getModel($Object) : null;
     }
 
-    public function getTableObject($table){
-        $class = $this->getTableClass($table);
-        return $this->getObject($class);
-    }
-
-    private function getTableClass($table){
-        return config('interact.namespace') . "\\" . $table;
-    }
-
-    private function getObject($class){
-        return new $class;
-    }
+    private function getObject($class){ return new $class; }
+    private function getModel($object){ return $this->getObject($this->getCallMethod($object,$this->method_get_model)); }
+    public function getTableObject($table){ return $this->getObject($this->getTableClass($table)); }
+    private function getTableClass($table){ return config('interact.namespace') . "\\" . $table; }
+    public function getPrimaryId($record){ return call_user_func_array([$this->object,$this->method_get_primary_id],[$record]); }
 
     public function getCallMethod($object,$method,$attrs = []){
         if(method_exists($object,$method))
             return call_user_func_array([$object,$method],$attrs);
         return null;
-    }
-
-    private function getModel($object){
-        return $this->getObject($this->getCallMethod($object,$this->method_get_model));
-    }
-
-    public function getPrimaryId($record){
-        return call_user_func_array([$this->object,$this->method_get_primary_id],[$record]);
     }
 
     public function getFilledAttributes($attributes,$mappings,$record){
