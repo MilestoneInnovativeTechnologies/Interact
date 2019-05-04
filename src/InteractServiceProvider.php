@@ -2,7 +2,6 @@
 
 namespace Milestone\Interact;
 
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
 class InteractServiceProvider extends ServiceProvider
@@ -31,9 +30,13 @@ class InteractServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->loadRoutesFrom($this->project_root . 'routes/web.php');
-        $config = $this->project_root . 'config';
-        $this->publishes([$config => config_path()]);
+        $this->loadRoutesFrom($this->path('routes','web.php'));
+        $this->publishes([$this->pathConfig() => config_path()]);
+        Event::register();
+    }
+
+    private function pathConfig($file = null){ return $this->path('config',$file); }
+    private function path($folder = null,$file = null){ return trim(implode('/',[$this->project_root,$folder,$file]),'\\\/'); }
 
     private function mergeConfigExtras(){
         foreach ($this->bindConfigs as $key => $interact_key)
