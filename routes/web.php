@@ -1,6 +1,6 @@
 <?php
     $route_prefix = config('interact.route_prefix');
-    $prefix = trim($route_prefix,'\\/');
+    $prefix = trim($route_prefix,'\\\/');
     Route::group([
         'namespace' => 'Milestone\\Interact',
         'prefix' => $prefix,
