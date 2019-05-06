@@ -30,17 +30,22 @@ class Export extends Controller
 
     public function index($table_name, Request $request){
         $this->initExport($table_name); if(!$this->model) return null;
-        $this->setExport($table_name, $request);
-        if(is_null($this->model)) return Out::data([]);
-        $this->setQuery($request); $this->setData();
-        $this->prepareData();
-        if(empty($this->data)) return null;
-        $this->updateTimings($table_name);
-        return Out::data($this->data);
+        $data = $this->getExportData($table_name,$request->created_at, $request->updated_at);
+        if(!empty($data)) $this->updateTimings($table_name);
+        return Out::data($data);
     }
 
-    private function setExport($table_name, $request){
-        $array = ['table' => $table_name, 'created_at' => $request->created_at, 'updated_at' => $request->updated_at];
+    public function getExportData($table, $created_at, $updated_at){
+        $this->setExport($table, $created_at, $updated_at);
+        if(is_null($this->model)) return [];
+        $this->setQuery($created_at, $updated_at);
+        $this->setData(); $this->prepareData();
+        if(empty($this->data)) return [];
+        return $this->data;
+    }
+
+    private function setExport($table, $created_at, $updated_at){
+        $array = compact('table','created_at','updated_at');
         $this->attributes = $this->getAttributes($this->object);
         $this->mappings = $this->getMappings($this->object);
         foreach($array as $key => $value){
@@ -48,7 +53,6 @@ class Export extends Controller
             if(property_exists($this->object,$key))
                 $this->object->$key = $value;
         }
-        $this->setQuery($request);
     }
 
     private function getAttributes($object){
@@ -59,9 +63,9 @@ class Export extends Controller
         return $this->getCallMethod($object,$this->method_get_mappings);
     }
 
-    private function setQuery($request){
-        if($request->has('created_at')) $this->setGetQuery($this->earlierTime($request->created_at));
-        if($request->has('updated_at')) $this->setUpdateQuery($this->earlierTime($request->created_at),$this->earlierTime($request->updated_at));
+    private function setQuery($created_at,$updated_at){
+        if($created_at) $this->setGetQuery($this->earlierTime($created_at));
+        if($updated_at) $this->setUpdateQuery($this->earlierTime($created_at),$this->earlierTime($updated_at));
     }
 
     private function earlierTime($time){
