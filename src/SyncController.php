@@ -81,12 +81,6 @@ class SyncController extends Controller
         $this->updateUpdatedActivityTimes($activity,$updated_at); return $activity;
     }
 
-    private function setExportObjectProperties($table,$created_at,$updated_at){
-        $this->exportInteractObjectAttributes = $this->getCallMethod($this->object,SYNCHelper::$method_get_attributes);
-        $this->exportInteractObjectMappings = $this->getCallMethod($this->object,SYNCHelper::$method_get_mappings);
-        $array = compact('table','created_at','updated_at');
-        foreach($array as $key => $value) if(property_exists($this->object,$key)) $this->object->$key = $value;
-    }
     private function fetchExportNewlyCreatedRecords($created_at){
         $exportNewRecordsQuery = SYNCHelper::newlyCreatedRecordsFetchQuery($this->model,$created_at);
         $this->exportNewRecordsQuery = $this->getCallMethod($this->object,SYNCHelper::$pre_export_get,[$exportNewRecordsQuery]) ?: $exportNewRecordsQuery;
@@ -107,7 +101,6 @@ class SyncController extends Controller
         SYNC::client($this->client,$this->underlyingTable)->setUpdated(now()->toDateTimeString(),Arr::get($activity,'record.updated_at'));
         Arr::set($activity,'query.updated_at',$query_updated);
     }
-
 
 
     private function startImportNewRecords(){
