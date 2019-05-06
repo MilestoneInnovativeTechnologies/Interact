@@ -71,13 +71,13 @@ class SyncController extends Controller
     private function getNewlyCreatedActivity($table,$created_at){
         $data = $this->fetchExportNewlyCreatedRecords($created_at);
         if($data->isEmpty()) return null;
-        $activity = SYNCHelper::wrapWithActivityProperties($table,'pk','create',$data);
+        $activity = SYNCHelper::wrapWithActivityProperties($table,[],'create',$data);
         $this->updateCreatedActivityTimes($activity,$created_at); return $activity;
     }
     private function getNewlyUpdatedActivity($table,$created_at,$updated_at){
         $data = $this->fetchExportNewlyUpdatedRecords($created_at,$updated_at);
         if($data->isEmpty()) return null;
-        $activity = SYNCHelper::wrapWithActivityProperties($table,'pk','update',$data);
+        $activity = SYNCHelper::wrapWithActivityProperties($table,[],'update',$data);
         $this->updateUpdatedActivityTimes($activity,$updated_at); return $activity;
     }
 
