@@ -7,16 +7,16 @@
     class Out
     {
         private $data = null;
-        private $type = null;
-        private $format = null;
+        private $type = 'file';//data,file
+        private $format = 'json';//json,xml
 
         private $XML_parent_node = 'inventory';
         private $XML_numeric_prefix = 'id';
 
         public function __construct($data)
         {
-            $this->format = request()->get('format','json');
-            $this->type = request()->get('type','data');
+            $this->format = request()->get('format',$this->format);
+            $this->type = request()->get('type',$this->type);
             $this->data = $data;
         }
 
