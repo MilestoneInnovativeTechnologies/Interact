@@ -26,6 +26,7 @@ class Controller extends BaseController
     }
 
     public function getUploadedFileContent(){
+        if(!request()->has($this->upload_file_name)) return [];
         $file = request()->file($this->upload_file_name);
         $contents = file_get_contents($file);
         return json_decode($contents,true);
@@ -44,9 +45,14 @@ class Controller extends BaseController
         $this->model = $status ? $this->getModel($Object) : null;
     }
 
+    public function initSync($table){
+        $this->object = $Object = $this->getTableObject($table);
+        $this->model = $Model = $this->getModel($Object);
+    }
+
+    public function getTableObject($table){ return $this->getObject($this->getTableClass($table)); }
     private function getObject($class){ return new $class; }
     private function getModel($object){ return $this->getObject($this->getCallMethod($object,$this->method_get_model)); }
-    public function getTableObject($table){ return $this->getObject($this->getTableClass($table)); }
     private function getTableClass($table){ return config('interact.namespace') . "\\" . $table; }
     public function getPrimaryId($record){ return call_user_func_array([$this->object,$this->method_get_primary_id],[$record]); }
 
