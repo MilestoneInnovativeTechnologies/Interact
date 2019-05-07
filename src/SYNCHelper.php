@@ -28,12 +28,9 @@
         public static $method_get_primary_id = 'getPrimaryIdFromImportRecord';
 
 
-        public static function wrapWithActivityProperties($table,$primary_key,$mode,$data){
-            $query = ['created_at' => null, 'updated_at' => null];
-            $record = ['created_at' => null, 'updated_at' => null];
-            if($mode === 'create') $record['created_at'] = $data->max($data[0]->getCreatedAtColumn())->toDateTimeString();
-            if($mode === 'update') $record['updated_at'] = $data->max($data[0]->getUpdatedAtColumn())->toDateTimeString();
-            return compact('table','primary_key','mode','data','query','record');
+        public static function wrapWithActivityProperties($table,$mode,$data){
+            $primary_key = [];
+            return compact('table','primary_key','mode','data');
         }
 
         public static function newlyCreatedRecordsFetchQuery($Model,$Created){
