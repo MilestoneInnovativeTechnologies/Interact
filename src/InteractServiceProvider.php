@@ -36,7 +36,7 @@ class InteractServiceProvider extends ServiceProvider
     }
 
     private function pathConfig($file = null){ return $this->path('config',$file); }
-    private function path($folder = null,$file = null){ return trim(implode('/',[$this->project_root,$folder,$file]),'\\\/'); }
+    private function path($folder = null,$file = null){ return rtrim(implode('/',[$this->project_root,$folder,$file]),'\\\/'); }
 
     private function mergeConfigExtras(){
         foreach ($this->bindConfigs as $key => $interact_key)
