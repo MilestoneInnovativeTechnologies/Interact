@@ -64,7 +64,7 @@ class SyncController extends Controller
     }
     private function getTimesFromSync($type){
         $table_sync_time = Arr::get($this->sync,"table.{$type}",0);
-        $client_sync_time = Arr::get($this->sync,"client.{$type}",0);
+        $client_sync_time = request()->get($type . '_at',null) ?: Arr::get($this->sync,"client.{$type}",0);
         $table = $table_sync_time ? Carbon::createFromTimeString($table_sync_time) : Carbon::now();
         $client = $client_sync_time ? Carbon::createFromTimeString($client_sync_time) : Carbon::create(1900);
         return compact('table','client');
