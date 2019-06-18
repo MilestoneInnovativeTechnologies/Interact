@@ -27,8 +27,8 @@ class SyncController extends Controller
     public function setupSync($table,$client){
         parent::initSync($table);
         $this->requestTable = $table; $this->client = $client;
-        $this->sync = SYNC::client($client,$table)->get();
         $this->underlyingTable = $this->model->getTable();
+        $this->sync = SYNC::client($client,$this->underlyingTable)->get();
     }
 
     private function setExportInteractObjectProperties(){
