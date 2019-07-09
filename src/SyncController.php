@@ -139,7 +139,7 @@ class SyncController extends Controller
                 if(count($activity['data']) > 300) set_time_limit(ceil(count($activity['data'])/10));
                 foreach($activity['data'] as $record){
                     if($this->doNeedToSkipThisImport($record)) continue;
-                    $id = call_user_func_array([$this->object,SYNCHelper::$method_get_primary_id],[$record]);
+                    $id = $this->getCallMethod($this->object,SYNCHelper::$method_get_primary_id,[$record]);
                     if($id) $this->doUpdateImportRecord($id,$record);
                     else $insertResult[$this->getPrimaryKeyCode($this->primaryKeys,$record)] = $this->doInsertImportRecord($record);
                 }
