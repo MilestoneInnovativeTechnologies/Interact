@@ -179,6 +179,7 @@ class SyncController extends Controller
     }
     private function doUpdateImportRecord($ID,$record){
         $selectedModel = $this->model->find($ID);
+        if(!$selectedModel) return;
         if($this->useInterface){
             $this->updateInteractObjectMode('update');
             $selectedModel->forceFill($this->getFilledAttributes($this->importInteractObjectAttributes,$this->importInteractObjectMappings,$record))->save();
