@@ -135,11 +135,14 @@ class SyncController extends Controller
         else foreach($Activities as $activity){
             $this->primaryKeys = $activity['primary_key'];
             $this->setImportInteractObjectProperties($activity); $this->getCallMethod($this->object,SYNCHelper::$pre_import,[$activity]);
-            if(!empty($activity['data'])) foreach($activity['data'] as $record){
-                if($this->doNeedToSkipThisImport($record)) continue;
-                $id = call_user_func_array([$this->object,SYNCHelper::$method_get_primary_id],[$record]);
-                if($id) $this->doUpdateImportRecord($id,$record);
-                else $this->doInsertImportRecord($record);
+            if(!empty($activity['data'])){
+                if(count($activity['data']) > 300) set_time_limit(ceil(count($activity['data'])/10));
+                foreach($activity['data'] as $record){
+                    if($this->doNeedToSkipThisImport($record)) continue;
+                    $id = call_user_func_array([$this->object,SYNCHelper::$method_get_primary_id],[$record]);
+                    if($id) $this->doUpdateImportRecord($id,$record);
+                    else $this->doInsertImportRecord($record);
+                }
             }
             $this->getCallMethod($this->object,SYNCHelper::$post_import,[$activity,[]]);
         }
