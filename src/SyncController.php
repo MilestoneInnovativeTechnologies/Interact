@@ -133,7 +133,7 @@ class SyncController extends Controller
         $Activities = $this->getUploadedFileContent(); if(!$Activities || empty($Activities)) return;
         $this->model->unguard(); if(!$this->useInterface) $this->doImportWithoutInterface($Activities);
         else foreach($Activities as $activity){
-            $this->primaryKeys = $activity['primary_key'];
+            $this->primaryKeys = $activity['primary_key']; $insertResult = [];
             $this->setImportInteractObjectProperties($activity); $this->getCallMethod($this->object,SYNCHelper::$pre_import,[$activity]);
             if(!empty($activity['data'])){
                 if(count($activity['data']) > 300) set_time_limit(ceil(count($activity['data'])/10));
@@ -141,10 +141,10 @@ class SyncController extends Controller
                     if($this->doNeedToSkipThisImport($record)) continue;
                     $id = call_user_func_array([$this->object,SYNCHelper::$method_get_primary_id],[$record]);
                     if($id) $this->doUpdateImportRecord($id,$record);
-                    else $this->doInsertImportRecord($record);
+                    else $insertResult[$this->getPrimaryKeyCode($this->primaryKeys,$record)] = $this->doInsertImportRecord($record);
                 }
             }
-            $this->getCallMethod($this->object,SYNCHelper::$post_import,[$activity,[]]);
+            $this->getCallMethod($this->object,SYNCHelper::$post_import,[$activity,$insertResult]);
         }
     }
     private function doImportWithoutInterface($Activities){
@@ -175,6 +175,7 @@ class SyncController extends Controller
             $newModel = $this->model->create($record);
         }
         $this->updateClientTableRecordDate('created',$newModel->created_at->toDateTimeString());
+        return $newModel->getKey();
     }
     private function doUpdateImportRecord($ID,$record){
         $selectedModel = $this->model->find($ID);

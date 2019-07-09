@@ -5,6 +5,7 @@ namespace Milestone\Interact;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller as BaseController;
 use Carbon\Carbon;
+use Illuminate\Support\Arr;
 
 class Controller extends BaseController
 {
@@ -55,6 +56,10 @@ class Controller extends BaseController
     private function getModel($object){ return $this->getObject($this->getCallMethod($object,$this->method_get_model)); }
     private function getTableClass($table){ return config('interact.namespace') . "\\" . $table; }
     public function getPrimaryId($record){ return call_user_func_array([$this->object,$this->method_get_primary_id],[$record]); }
+    public function getPrimaryKeyCode($pks,$record){
+        if(!$pks || empty($pks)) return microtime(true)*1000000000;
+        return is_array($pks) ? implode(config('interact.delimiter'),Arr::only($record,$pks)) : Arr::get($record,$pks);
+    }
 
     public function getCallMethod($object,$method,$attrs = []){
         if(method_exists($object,$method))
