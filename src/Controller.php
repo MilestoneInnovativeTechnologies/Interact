@@ -54,7 +54,7 @@ class Controller extends BaseController
     public function getTableObject($table){ return $this->getObject($this->getTableClass($table)); }
     private function getObject($class){ return new $class; }
     private function getModel($object){ return $this->getObject($this->getCallMethod($object,$this->method_get_model)); }
-    private function getTableClass($table){ return config('interact.namespace') . "\\" . $table; }
+    private function getTableClass($table){ return config('interact.namespace') . "\\" . NameConflict::conflict($table); }
     public function getPrimaryId($record){ return call_user_func_array([$this->object,$this->method_get_primary_id],[$record]); }
     public function getPrimaryKeyCode($pks,$record){
         if(!$pks || empty($pks)) return microtime(true)*1000000000;
