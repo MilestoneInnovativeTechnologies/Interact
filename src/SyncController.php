@@ -174,7 +174,7 @@ class SyncController extends Controller
         } else {
             $newModel = $this->model->create($record);
         }
-        $this->updateClientTableRecordDate('created',$newModel->created_at->toDateTimeString());
+        if(array_key_exists('created_at', $newModel->getAttributes()) && $newModel->created_at) $this->updateClientTableRecordDate('created',$newModel->created_at->toDateTimeString());
         return $newModel->getKey();
     }
     private function doUpdateImportRecord($ID,$record){
