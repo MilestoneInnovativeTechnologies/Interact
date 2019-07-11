@@ -34,12 +34,9 @@
         }
 
         public static function newlyCreatedRecordsFetchQuery($Model,$Created){
-            $column = $Model->getCreatedAtColumn();
-            return array_key_exists($column, $Model->getAttributes())
-                ? $Model->query()
-                ->where(function($Q) use($column,$Created){ $Q->where($column,'>',$Created); })
-                ->orderBy($column,'asc')
-                : $Model->query()->where('id',0);
+            return $Model->query()
+                ->where(function($Q) use($Model,$Created){ $Q->where($Model->getCreatedAtColumn(),'>',$Created); })
+                ->orderBy($Model->getCreatedAtColumn(),'asc');
         }
 
         public static function newlyUpdatedRecordsFetchQuery($Model,$Created,$Updated){
