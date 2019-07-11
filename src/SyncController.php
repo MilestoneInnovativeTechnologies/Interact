@@ -5,6 +5,7 @@ namespace Milestone\Interact;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 
 class SyncController extends Controller
 {
@@ -133,6 +134,7 @@ class SyncController extends Controller
         $Activities = $this->getUploadedFileContent(); if(!$Activities || empty($Activities)) return;
         $this->model->unguard(); if(!$this->useInterface) $this->doImportWithoutInterface($Activities);
         else foreach($Activities as $activity){
+            if($activity['mode'] === 'delete_and_create'){ $this->truncate(); $activity['mode'] = 'create'; }
             $this->primaryKeys = $activity['primary_key']; $insertResult = [];
             $this->setImportInteractObjectProperties($activity); $this->getCallMethod($this->object,SYNCHelper::$pre_import,[$activity]);
             if(!empty($activity['data'])){
@@ -188,5 +190,11 @@ class SyncController extends Controller
             $selectedModel->forceFill($record)->save();
         }
         $this->updateClientTableRecordDate('created',$selectedModel->updated_at->toDateTimeString());
+    }
+
+    private function truncate(){
+        DB::statement("SET foreign_key_checks=0");
+        $this->model->truncate();
+        DB::statement("SET foreign_key_checks=1");
     }
 }
