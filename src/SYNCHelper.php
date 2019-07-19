@@ -29,8 +29,8 @@
 
 
         public static function wrapWithActivityProperties($table,$mode,$data){
-            $primary_key = [];
-            return compact('table','primary_key','mode','data');
+            $primary_key = []; $datetime = date('Y-m-d H:i:s');
+            return compact('table','primary_key','mode','data','datetime');
         }
 
         public static function newlyCreatedRecordsFetchQuery($Model,$Created){
