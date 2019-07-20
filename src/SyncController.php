@@ -18,7 +18,8 @@ class SyncController extends Controller
     public function index($client,$table){
         $this->setupSync($table,$client);
         $this->useInterface = (request()->has('interface') && request()->interface == 'false') ? false : $this->useInterface;
-        $this->setExportInteractObjectProperties(); $Activities = $this->getExportNewRecords();
+        $this->setExportInteractObjectProperties();
+        $Activities = ($this->exportInteractObjectAttributes && !empty($this->exportInteractObjectAttributes)) ? $this->getExportNewRecords() : [];
         $this->startImportNewRecords();
         if($Activities && !empty($Activities)) return Out::data($Activities);
         return null;
