@@ -132,7 +132,7 @@ class SyncController extends Controller
 
 
     private function startImportNewRecords(){
-        $Activities = $this->getUploadedFileContent(); if(!$Activities || empty($Activities)) return;
+        $Activities = $this->getUploadedContent(); if(!$Activities || empty($Activities)) return;
         $this->model->unguard(); if(!$this->useInterface) $this->doImportWithoutInterface($Activities);
         else foreach($Activities as $activity){
             if($activity['mode'] === 'delete_and_create'){ $this->truncate(); $activity['mode'] = 'create'; }

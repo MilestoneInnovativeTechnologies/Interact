@@ -10,6 +10,7 @@ use Illuminate\Support\Arr;
 class Controller extends BaseController
 {
     public $upload_file_name = 'file';
+    public $base64_content_name = 'content';
 
     public $method_get_model = 'getModel';
     public $method_get_primary_id = 'getPrimaryIdFromImportRecord';
@@ -24,6 +25,18 @@ class Controller extends BaseController
     {
         $this->max_same_request = config('interact.max_same_request');
         $this->cache_store = array_keys(config('interact.cache_stores'))[0];
+    }
+
+    public function getUploadedContent(){
+        if(request()->has($this->base64_content_name)) return $this->getUploadedBase64Content();
+        if(request()->has($this->upload_file_name)) return $this->getUploadedFileContent();
+        return [];
+    }
+
+    public function getUploadedBase64Content(){
+        if(!request()->has($this->base64_content_name)) return [];
+        $contents = base64_decode(request()->get($this->base64_content_name));
+        return json_decode($contents,true);
     }
 
     public function getUploadedFileContent(){
