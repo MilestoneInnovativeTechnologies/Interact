@@ -15,13 +15,14 @@
         {
             $this->table = $table ?: $client; $this->client = $table ? $client : null;
             $disk = $this->disk = self::disk();
-            $json_data = Storage::disk($disk)->exists(self::$file)
-                ? Storage::disk($disk)->get(self::$file)
+            $json_data = Storage::disk($disk)->exists(self::file())
+                ? Storage::disk($disk)->get(self::file())
                 : $this->createAndGetSyncData();
             $this->sync = json_decode($json_data,true);
             $this->correctSyncData();
         }
 
+        static public function file(){ return implode('.',[request()->getHost(),self::$file]); }
         static public function table($table){ return new self($table); }
         static public function client($client,$table = null){ return new self($client,$table); }
         static public function delete($client){ return (new self($client,$temp_table = '_OO_'))->deleteKey("clients.{$client}","tables.{$temp_table}"); }
@@ -83,5 +84,5 @@
 
         private function updateSync($key,$value){ Arr::set($this->sync,$key,$value); $this->storeSync(); }
         private function deleteKey($key,$table = null){ Arr::forget($this->sync,[$key,$table]); return !!$this->storeSync(); }
-        private function storeSync(){ Storage::disk($this->disk)->put(self::$file,json_encode($this->sync)); return $this->sync; }
+        private function storeSync(){ Storage::disk($this->disk)->put(self::file(),json_encode($this->sync)); return $this->sync; }
     }
