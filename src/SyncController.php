@@ -190,7 +190,7 @@ class SyncController extends Controller
         } else {
             $selectedModel->forceFill($record)->save();
         }
-        $this->updateClientTableRecordDate('created',$selectedModel->updated_at->toDateTimeString());
+        $this->updateClientTableRecordDate('updated',$selectedModel->updated_at->toDateTimeString());
     }
 
     private function truncate(){
