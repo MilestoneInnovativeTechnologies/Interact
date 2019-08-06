@@ -25,7 +25,7 @@ class Import extends Controller
         $Contents = $this->getUploadedFileContent(); if(empty($Contents)) return $Return;
         foreach((array) $Contents as $Content){
             $this->initImport($Content); $this->setImport($Content); $this->primary_key = $Content['primary_key'];
-            $this->callPreImport($Content);
+            $Content = $this->callPreImport($Content) ?: $Content;
             set_time_limit($exec_time_limit += count($Content['data']));
             $Return[] = $this->callPostImport($Content,$this->run($Content['mode'],$Content['data']));
         }

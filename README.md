@@ -21,7 +21,7 @@ Return value is ignored.
 
 If a method named, **preImport**, is exists, then it will be called before starting the import action.
 It will be supplied with the argument, the total Content.
-Return value is ignored.
+Modified Content or null to be return.
 
 If a method named, **postImport**, is exists, then it will be called after executing the whole action.
 It will be supplied with the argument, the total Content and Result object.

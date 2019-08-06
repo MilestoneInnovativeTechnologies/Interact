@@ -137,7 +137,8 @@ class SyncController extends Controller
         else foreach($Activities as $activity){
             if($activity['mode'] === 'delete_and_create'){ $this->truncate(); $activity['mode'] = 'create'; }
             $this->primaryKeys = $activity['primary_key']; $insertResult = [];
-            $this->setImportInteractObjectProperties($activity); $this->getCallMethod($this->object,SYNCHelper::$pre_import,[$activity]);
+            $this->setImportInteractObjectProperties($activity);
+            $activity = $this->getCallMethod($this->object,SYNCHelper::$pre_import,[$activity]) ?: $activity;
             if(!empty($activity['data'])){
                 if(count($activity['data']) > 300) set_time_limit(ceil(count($activity['data'])/10));
                 foreach($activity['data'] as $record){
