@@ -12,6 +12,11 @@
             Route::post('delete','SyncController@delete');
             Route::post('{client}/{table}','SyncController@index');
         });
+        Route::group([
+            'prefix' => 'sse',
+        ],function(){
+            Route::get('info/{client}','SSEController@index');
+        });
         Route::get('{table_name}','Export@index');
         Route::get('/',function(){ return '<form method="post" enctype="multipart/form-data"><input type="file" name="file"><input type="submit"></form>'; });
         Route::post('/','Import@index');
