@@ -31,6 +31,7 @@
         public function setClient($client){ return new self($client,$this->table); }
         public function setCreated($table,$record){ $this->setTableOfType($table,$record,'created',!!$this->client); }
         public function setUpdated($table,$record){ $this->setTableOfType($table,$record,'updated',!!$this->client); }
+        public function setSync($dtz = null){ $this->updateSync($this->getArrKey('sync',$this->client,false),$dtz ?: now()->toDateTimeString()); return null; }
         public function get(){
             $table = Arr::get($this->sync,"tables.{$this->table}");
             if($this->client) $client = Arr::get($this->sync,"clients.{$this->client}.{$this->table}");
@@ -48,8 +49,9 @@
         private function template($item = 'base',$client = null, $table = null){
             $base = ['tables'=>[],'clients' =>[]];
             $time = ['created'=>0,'updated'=>0,'record'=>['created'=>0,'updated'=>0]];
+            $ctime = array_merge($time,['sync'=>0]);
             if($item === 'table') return [ 'tables' => [ $client => $time ], 'clients' => [] ];
-            if($item === 'full') return [ 'tables' => [ $table => $time ], 'clients' => [ $client => [ $table => $time ] ] ];
+            if($item === 'full') return [ 'tables' => [ $table => $time ], 'clients' => [ $client => [ $table => $ctime ] ] ];
             if($item === 'client') return [ 'tables' => [], 'clients' => [ $client => [] ] ];
             if($item === 'time') return $time;
             return $base;
@@ -58,9 +60,10 @@
         private function setTableOfType($table, $record, $type='created', $client=false){
             $this->updateSync($this->getArrKey($type,$client,false),$table);
             $this->updateSync($this->getArrKey($type,$client,true),$record);
+            $this->setSync();
         }
 
-        private function getArrKey($type,$client, $record){ return implode('.',$this->getArrForKey($type,$client,$record)); }
+        private function getArrKey($type,$client,$record){ return implode('.',$this->getArrForKey($type,$client,$record)); }
         private function getArrForKey($type, $client, $record){
             $Array = [$type]; if($record) array_unshift($Array,'record');
             array_unshift($Array,$this->table);
