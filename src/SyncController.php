@@ -22,7 +22,7 @@ class SyncController extends Controller
         $Activities = ($this->exportInteractObjectAttributes && !empty($this->exportInteractObjectAttributes)) ? $this->getExportNewRecords() : [];
         $this->startImportNewRecords();
         if($Activities && !empty($Activities)) return Out::data($Activities);
-        return null;
+        return SYNC::client($this->client,$this->underlyingTable)->setSync();
     }
     public function delete(Request $request){ if($request->has('client')); SYNC::delete($request->client); }
 
