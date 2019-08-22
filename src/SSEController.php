@@ -14,7 +14,7 @@ class SSEController extends Controller
         'X-Accel-Buffering' => 'no',
         'Cache-Control' => 'no-cache',
     ];
-    private $refresh = 6, $client = null, $tables = [];
+    private $refresh = 10, $client = null, $tables = [];
 
     public function index($client){
         $this->client = $client;
