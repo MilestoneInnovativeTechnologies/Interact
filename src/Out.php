@@ -48,7 +48,7 @@
         }
 
         public function response_data($data){
-            return $data;
+            return response($data)->header('Content-Type','application/json');
         }
 
         public function response_file($data,$format){
