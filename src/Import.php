@@ -94,6 +94,11 @@ class Import extends Controller
         return $result;
     }
 
+    private function do_delete_and_create($data){
+        $this->model->query()->delete();
+        return $this->do_create($data);
+    }
+
     private function getRecordKeyCode($data){
         if(!$this->primary_key || empty($this->primary_key)) return microtime(true)*1000000000;
         return is_array($this->primary_key) ? implode(config('interact.delimiter'),Arr::only($data,$this->primary_key)) : Arr::get($data,$this->primary_key);
