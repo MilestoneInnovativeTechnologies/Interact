@@ -17,7 +17,7 @@ class SSEController extends Controller
     private $refresh = 10, $client = null, $tables = [];
 
     public function index($client){
-        $this->client = $client;
+        $this->client = $client; $this->refresh = request('refresh') ?: $this->refresh;
         $this->tables = request('tables') ?: [];
         $response = new StreamedResponse(function(){
             while(true) {
