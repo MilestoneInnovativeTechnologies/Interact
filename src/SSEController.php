@@ -2,9 +2,9 @@
 
 namespace Milestone\Interact;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class SSEController extends Controller
@@ -64,7 +64,10 @@ class SSEController extends Controller
     }
 
     private function getSyncInfo($client, $table){
-        return SYNC::client($client,$table)->get();
+        $underlyingTable = Cache::store('uTable')->get($table,function() use($table){
+            return UnderlyingTableController::table($table);
+        });
+        return SYNC::client($client,$underlyingTable)->get();
     }
 
     private function getDates($data){
