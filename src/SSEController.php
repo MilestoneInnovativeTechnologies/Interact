@@ -68,9 +68,9 @@ class SSEController extends Controller
     }
 
     private function getDates($data){
-        $created = Arr::get($data,"table.created") ?: '1900-01-01 00:00:01';
-        $updated = Arr::get($data,"table.updated") ?: '1900-01-01 00:00:01';
-        $sync = Arr::get($data,"client.sync") ?: '1900-01-01 00:00:01';
+        $created = Arr::get($data,"table.created",'1900-01-01 00:00:01');
+        $updated = Arr::get($data,"table.updated",'1900-01-01 00:00:01');
+        $sync = Arr::get($data,"client.sync",'1900-01-01 00:00:01');
         return [Carbon::createFromTimeString($sync),Carbon::createFromTimeString($created),Carbon::createFromTimeString($updated)];
     }
 }
