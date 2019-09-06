@@ -8,13 +8,13 @@
     class SYNC
     {
         private $sync = null;
-        private $disk, $table, $client;
+        private static $disk, $table, $client;
         public static $file = 'sync';
 
         public function __construct($client,$table = null)
         {
-            $this->table = $table ?: $client; $this->client = $table ? $client : null;
-            $disk = $this->disk = self::disk();
+            self::$table = $table ?: $client; self::$client = $table ? $client : null;
+            $disk = self::$disk = self::disk();
             $json_data = Storage::disk($disk)->exists(self::file())
                 ? Storage::disk($disk)->get(self::file())
                 : $this->createAndGetSyncData();
@@ -27,19 +27,19 @@
         static public function client($client,$table = null){ return new self($client,$table); }
         static public function delete($client){ return (new self($client,$temp_table = '_OO_'))->deleteKey("clients.{$client}","tables.{$temp_table}"); }
         static public function disk(){ return array_keys(config('interact.filesystems_disks'))[0]; }
-        public function setTable($table){ return new self($this->client,$table); }
-        public function setClient($client){ return new self($client,$this->table); }
-        public function setCreated($table,$record){ $this->setTableOfType($table,$record,'created',!!$this->client); }
-        public function setUpdated($table,$record){ $this->setTableOfType($table,$record,'updated',!!$this->client); }
-        public function setSync($dtz = null){ $this->updateSync($this->getArrKey('sync',$this->client,false),$dtz ?: now()->toDateTimeString()); return null; }
+        public function setTable($table){ return new self(self::$client,$table); }
+        public function setClient($client){ return new self($client,self::$table); }
+        public function setCreated($table,$record){ $this->setTableOfType($table,$record,'created',!!self::$client); }
+        public function setUpdated($table,$record){ $this->setTableOfType($table,$record,'updated',!!self::$client); }
+        public function setSync($dtz = null){ $this->updateSync($this->getArrKey('sync',self::$client,false),$dtz ?: now()->toDateTimeString()); return null; }
         public function get(){
-            $table = Arr::get($this->sync,"tables.{$this->table}");
-            if($this->client) $client = Arr::get($this->sync,"clients.{$this->client}.{$this->table}");
+            $table = Arr::get($this->sync,"tables." . self::$table);
+            if(self::$client) $client = Arr::get($this->sync,"clients.{$this::$client}.{$this::$table}");
             return compact('table','client');
         }
 
         private function getTemplateRequestItem(){
-            $client = $this->client; $table = $this->table;
+            $client = self::$client; $table = self::$table;
             if(!$table && $client) return ['client',$client];
             if($table && $client) return ['full',$client,$table];
             if($table && !$client) return ['table',$table];
@@ -66,8 +66,8 @@
         private function getArrKey($type,$client,$record){ return implode('.',$this->getArrForKey($type,$client,$record)); }
         private function getArrForKey($type, $client, $record){
             $Array = [$type]; if($record) array_unshift($Array,'record');
-            array_unshift($Array,$this->table);
-            if($client) array_unshift($Array,'clients',$this->client);
+            array_unshift($Array,self::$table);
+            if($client) array_unshift($Array,'clients',self::$client);
             else array_unshift($Array,'tables');
             return $Array;
         }
@@ -79,13 +79,13 @@
 
         private function correctSyncData(){
             $sync = $this->sync;
-            if($this->table && !Arr::get($sync,"tables.{$this->table}")) $this->updateSync("tables.{$this->table}",$this->template('time'));
-            if($this->client && !$this->table && !Arr::get($sync,"clients.{$this->client}")) $this->updateSync("clients.{$this->client}",[]);
-            if($this->client && $this->table && !Arr::get($sync,"clients.{$this->client}")) $this->updateSync("clients.{$this->client}",[$this->table => $this->template('time')]);
-            if($this->client && $this->table && !Arr::get($sync,"clients.{$this->client}.{$this->table}")) $this->updateSync("clients.{$this->client}.{$this->table}",$this->template('time'));
+            if(self::$table && !Arr::get($sync,"tables.{$this::$table}")) $this->updateSync("tables.{$this::$table}",$this->template('time'));
+            if(self::$client && !self::$table && !Arr::get($sync,"clients.{$this::$client}")) $this->updateSync("clients.{$this::$client}",[]);
+            if(self::$client && self::$table && !Arr::get($sync,"clients.{$this::$client}")) $this->updateSync("clients.{$this::$client}",[$this::$table => $this->template('time')]);
+            if(self::$client && self::$table && !Arr::get($sync,"clients.{$this::$client}.{$this::$table}")) $this->updateSync("clients.{$this::$client}.{$this::$table}",$this->template('time'));
         }
 
         private function updateSync($key,$value){ Arr::set($this->sync,$key,$value); $this->storeSync(); }
         private function deleteKey($key,$table = null){ Arr::forget($this->sync,[$key,$table]); return !!$this->storeSync(); }
-        private function storeSync(){ Storage::disk($this->disk)->put(self::file(),json_encode($this->sync)); return $this->sync; }
+        private function storeSync(){ Storage::disk($this::$disk)->put(self::file(),json_encode($this->sync)); return $this->sync; }
     }
