@@ -10,7 +10,7 @@
         public function __construct()
         {
 
-            LEvent::listen(['*eloquent.created: *'], function($name, $data){
+            LEvent::listen(['eloquent.created: *'], function($name, $data){
                 $class = $this->getClass($name); $model = new $class;
                 $table = $model->getTable(); $record = Arr::get($data[0],$data[0]->getCreatedAtColumn(),self::defaultDateTime())->toDateTimeString();
                 SYNC::table($table)->setCreated(self::nowDateTime(),$record);
