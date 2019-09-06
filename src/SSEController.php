@@ -21,9 +21,10 @@ class SSEController extends Controller
         $this->tables = request('tables') ?: [];
         $response = new StreamedResponse(function(){
             while(true) {
+                set_time_limit($this->refresh + 5);
                 echo $this->getResponse();
                 ob_flush(); flush();
-                sleep(request('refresh') ?: $this->refresh);
+                sleep($this->refresh);
             }
         });
         return $this->setHeaders($response);
