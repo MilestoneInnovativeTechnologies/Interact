@@ -22,7 +22,7 @@
             $this->correctSyncData();
         }
 
-        static public function file(){ return implode('.',[request()->getHost(),self::$file]); }
+        static public function file($table = null){ return implode('.',[$table ?: self::$table,request()->getHost(),self::$file]); }
         static public function table($table){ return new self($table); }
         static public function client($client,$table = null){ return new self($client,$table); }
         static public function delete($client){ return (new self($client,$temp_table = '_OO_'))->deleteKey("clients.{$client}","tables.{$temp_table}"); }
