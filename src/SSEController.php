@@ -60,7 +60,7 @@ class SSEController extends Controller
     private function haveNew($table){
         $info = $this->getSyncInfo($this->client,$table);
         $date = $this->getDates($info); $sync = $date[0];
-        return ($date[1]->greaterThan($sync) || $date[2]->greaterThan($sync));
+        return ($date[1]->greaterThanOrEqualTo($sync) || $date[2]->greaterThanOrEqualTo($sync));
     }
 
     private function getSyncInfo($client, $table){
