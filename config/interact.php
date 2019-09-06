@@ -66,6 +66,10 @@ return [
         'interact' => [
             'driver' => 'file',
             'path' => storage_path('framework/cache/interact'),
+        ],
+        'uTable' => [
+            'driver' => 'file',
+            'path' => storage_path('framework/cache/interact/underlyingTable'),
         ]
     ],
 
