@@ -25,7 +25,7 @@
         static public function file($table = null){ return implode('.',[$table ?: self::$table,request()->getHost(),self::$file]); }
         static public function table($table){ return new self($table); }
         static public function client($client,$table = null){ return new self($client,$table); }
-        static public function delete($client){ return (new self($client,$temp_table = '_OO_'))->deleteKey("clients.{$client}","tables.{$temp_table}"); }
+        static public function delete($client, $table = '_OO_'){ return (new self($client,$table))->deleteKey("clients.{$client}"); }
         static public function disk(){ return array_keys(config('interact.filesystems_disks'))[0]; }
         public function setTable($table){ return new self(self::$client,$table); }
         public function setClient($client){ return new self($client,self::$table); }
@@ -86,6 +86,6 @@
         }
 
         private function updateSync($key,$value){ Arr::set($this->sync,$key,$value); $this->storeSync(); }
-        private function deleteKey($key,$table = null){ Arr::forget($this->sync,[$key,$table]); return !!$this->storeSync(); }
+        private function deleteKey($key){ Arr::forget($this->sync,$key); return !!$this->storeSync(); }
         private function storeSync(){ Storage::disk($this::$disk)->put(self::file(),json_encode($this->sync)); return $this->sync; }
     }

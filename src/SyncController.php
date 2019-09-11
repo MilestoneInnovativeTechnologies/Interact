@@ -24,13 +24,18 @@ class SyncController extends Controller
         if($Activities && !empty($Activities)) return Out::data($Activities);
         return SYNC::client($this->client,$this->underlyingTable)->setSync();
     }
-    public function delete(Request $request){ if($request->has('client')); SYNC::delete($request->client); }
+    public function delete(Request $request){
+        if(!$request->has('client')) return; $client = $request->get('client'); $tables = $this->cacheClientTable($client);
+        foreach ($tables as $table) { SYNC::delete($client,$table); }
+        $this->cacheClientTable($client,[]);
+    }
 
     public function setupSync($table,$client){
         parent::initSync($table);
         $this->requestTable = $table; $this->client = $client;
-        $this->underlyingTable = $this->model->getTable();
-        $this->sync = SYNC::client($client,$this->underlyingTable)->get();
+        $this->underlyingTable = $uTable = $this->model->getTable();
+        parent::cacheClientTable($client,$uTable);
+        $this->sync = SYNC::client($client,$uTable)->get();
     }
 
     private function setExportInteractObjectProperties(){
