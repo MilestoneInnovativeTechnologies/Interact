@@ -64,9 +64,7 @@ class SSEController extends Controller
     }
 
     private function getSyncInfo($client, $table){
-        $underlyingTable = Cache::store('uTable')->get($table,function() use($table){
-            return UnderlyingTableController::table($table);
-        });
+        $underlyingTable = UnderlyingTableController::table($table);
         return SYNC::client($client,$underlyingTable)->get();
     }
 
