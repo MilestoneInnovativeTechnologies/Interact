@@ -131,4 +131,15 @@ class Controller extends BaseController
         cache()->store($this->cache_store)->put($check_count,0);
     }
 
+    public function cacheClientTable($client,$table = null){
+        $cKey = 'client-tables-' . $client;
+        $clientTables = cache()->store($this->cache_store)->get($cKey,[]);
+        if(isset($table)){
+            if(is_array($table) && count($table) === 0) $clientTables = [];
+            else { array_push($clientTables,$table); $clientTables = array_unique($clientTables);  }
+            cache()->store($this->cache_store)->put($cKey,$clientTables);
+        }
+        return $clientTables;
+    }
+
 }
