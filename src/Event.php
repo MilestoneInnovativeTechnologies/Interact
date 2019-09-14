@@ -12,12 +12,12 @@
 
             LEvent::listen(['eloquent.created: *'], function($name, $data){
                 $class = $this->getClass($name); $model = new $class;
-                $table = $model->getTable(); $record = Arr::get($data[0],$data[0]->getCreatedAtColumn(),self::defaultDateTime())->toDateTimeString();
+                $table = $model->getTable(); $record = Arr::get($data[0],$data[0]->getCreatedAtColumn(),self::defaultDateTime()); if(!is_string($record)) $record = $record->toDateTimeString();
                 SYNC::table($table)->setCreated(self::nowDateTime(),$record);
             });
             LEvent::listen(['eloquent.updated: *'], function($name,$data){
                 $class = $this->getClass($name); $model = new $class;
-                $table = $model->getTable(); $record = Arr::get($data[0],$data[0]->getUpdatedAtColumn(),self::defaultDateTime())->toDateTimeString();
+                $table = $model->getTable(); $record = Arr::get($data[0],$data[0]->getUpdatedAtColumn(),self::defaultDateTime()); if(!is_string($record)) $record = $record->toDateTimeString();
                 SYNC::table($table)->setUpdated(self::nowDateTime(),$record);
             });
         }
