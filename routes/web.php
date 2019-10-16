@@ -10,7 +10,7 @@
             'prefix' => 'sync'
         ],function(){
             Route::post('delete','SyncController@delete');
-            Route::post('{client}/{table}','SyncController@index');
+            Route::any('{client}/{table}','SyncController@index');
         });
         Route::group([
             'prefix' => 'sse',
