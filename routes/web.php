@@ -4,7 +4,7 @@
     Route::group([
         'namespace' => 'Milestone\\Interact',
         'prefix' => $prefix,
-        'middleware' => \App\Http\Middleware\APIDebug::class,
+//        'middleware' => \App\Http\Middleware\APIDebug::class,
     ],function(){
         Route::group([
             'prefix' => 'sync'
