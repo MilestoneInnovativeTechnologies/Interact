@@ -14,20 +14,27 @@ class SSEController extends Controller
         'X-Accel-Buffering' => 'no',
         'Cache-Control' => 'no-cache',
     ];
-    private $refresh = 10, $client = null, $tables = [];
+    private $refresh = 10, $client = null, $tables = [], $count = 0, $max = 30;
 
     public function index($client){
-        $this->client = $client; $this->refresh = request('refresh') ?: $this->refresh;
+        $this->refresh = request('refresh') ?: $this->refresh;
+        $this->max = request('max') ?: $this->max;
+        $this->client = $client;
         $this->tables = request('tables') ?: [];
         $response = new StreamedResponse(function(){
             while(true) {
                 set_time_limit($this->refresh + 5);
-                echo $this->getResponse();
-                ob_flush(); flush();
+                $this->flushResponse();
+                if($this->count++ > $this->max) exit(200);
                 sleep($this->refresh);
             }
         });
         return $this->setHeaders($response);
+    }
+
+    private function flushResponse(){
+        echo $this->getResponse();
+        ob_flush(); flush();
     }
 
     private function getResponse(){
