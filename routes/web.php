@@ -17,6 +17,7 @@
         ],function(){
             Route::get('info/{client}','SSEController@index');
         });
+        Route::get('ajax/info/{client}','SSEController@ajax');
         Route::get('{table_name}','Export@index');
         Route::get('/',function(){ return '<form method="post" enctype="multipart/form-data"><input type="file" name="file"><input type="submit"></form>'; });
         Route::post('/','Import@index');

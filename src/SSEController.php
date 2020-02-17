@@ -32,6 +32,12 @@ class SSEController extends Controller
         return $this->setHeaders($response);
     }
 
+    public function ajax($client){
+        $this->client = $client;
+        $this->tables = request('tables') ?: [];
+        return response($this->updatedTables(),200,['Access-Control-Allow-Origin' => '*','Content-Type' => 'application/json']);
+    }
+
     private function flushResponse(){
         echo $this->getResponse();
         ob_flush(); flush();
@@ -43,11 +49,7 @@ class SSEController extends Controller
     }
 
     private function updatedTables(){
-        $updatedTables = [];
-        foreach ($this->tables as $table){
-            if($this->haveNew($table)) $updatedTables[] = $table;
-        }
-        return $updatedTables;
+        return array_values(array_filter($this->tables,function($table){ return $this->haveNew($table); }));
     }
 
     private function getSSEData($event,$data){
